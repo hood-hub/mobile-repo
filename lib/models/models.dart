@@ -1,0 +1,1 @@
+export 'postmodel.dart';
