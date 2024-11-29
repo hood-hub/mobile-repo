@@ -82,11 +82,6 @@ Future<UserModel?> getUser2() async {
 class UserNotifier extends _$UserNotifier {
   @override
   Future<UserModel?> build() async {
-/*    var user = await ref.read(getUserProvider.future);
-    print('userdata - ${user?.toJson()}');
-    return user;*/
-
-    print('yaa');
     try {
 
       var token = await ref.read(secureStorageProvider).read(key: 'auth_token');

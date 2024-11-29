@@ -21,12 +21,13 @@ class DioService {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         // Retrieve the auth token from secure storage
-        String? token = _ref.read(tokenProvider); // Use `read` to access token from provider
-        print('token: $token');
+        //String? token = _ref.read(tokenProvider); // Use `read` to access token from provider
+        var token = await _secureStorage.read(key: 'auth_token');
+        print('token1: $token');
         if (token == null) {
           // If tokenProvider is empty, load from secure storage as fallback
           token = await _secureStorage.read(key: 'auth_token');
-          print('token: $token');
+          print('token2: $token');
         }
 
         // Attach token to request headers
@@ -59,6 +60,7 @@ class DioService {
         queryParameters: queryParameters,
         options: options,
       );
+      print(response);
       return response;
     } on DioException catch (e) {
       // Handle DioError appropriately
@@ -90,10 +92,12 @@ class DioService {
         queryParameters: queryParameters,
         options: options,
       );
+      print('DIO POST RESPONSE: ${response} ');
       return response;
-    } on DioException catch (e) {
+    } on DioException catch (e,s ) {
       // Handle DioError appropriately
       print(e);
+      print(s);
       throw _handleDioError(e);
     }
   }

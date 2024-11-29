@@ -154,6 +154,8 @@ class _AccountPageState extends ConsumerState<AccountScreen> {
 
     if (confirmed == true) {
       // Perform logout
+      ref.invalidate(tokenProvider);
+      ref.invalidate(userNotifierProvider);
       await ref.read(secureStorageProvider).delete(key: 'auth_token');
       // Navigate to the Home or reset the screen state
       ref.read(bottomNavIndexProvider.notifier).state = 0;

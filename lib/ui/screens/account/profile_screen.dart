@@ -35,41 +35,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   String? _profileImageUrl;
   LatLng? _selectedLocation;
   String _reducedAddress = '';
-
-/*  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_isInitialized) {
-      _initializeControllers();
-      _isInitialized = true;
-    }
-  }*/
-
-  Future<void> _initializeControllers() async {
-   // ref.invalidate(userNotifierProvider);
-    final user = await ref.refresh(userNotifierProvider.future);
-    print(user?.toJson());
-    if (user != null) {
-      setState(() {
-        _firstNameController.text = user.firstName ?? '';
-        _lastNameController.text = user.lastName ?? '';
-        _usernameController.text = user.username ?? '';
-        _emailController.text = user.email ?? '';
-        _addressController.text = user.stringAddress ?? '';
-        _profileImageUrl = user.profilePicture;
-        _selectedLocation = user.geoAddress?.coordinates != null
-            ? LatLng(user.geoAddress!.coordinates[0], user.geoAddress!.coordinates[1])
-            : null;
-      });
-    }
-  }
+  var initDone = false;
 
   Future<void> _pickMedia() async {
     setState(() => _isLoading = true); // Show loader while uploading
     final mediaUrl = await ref.read(uploadFilesProvider.future);
+    print('medi url $mediaUrl');
     if (mediaUrl != null && mediaUrl.isNotEmpty) {
       setState(() {
+        print(mediaUrl.first);
         _profileImageUrl = mediaUrl.first;
+        print('prof $_profileImageUrl');
         _isEditing = true; // Show "Save Changes" when media is picked
       });
     }
@@ -102,7 +78,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   Future<void> _saveChanges() async {
-    setState(() => _isLoading = true); // Show loader while saving changes
+    //setState(() => _isLoading = true); // Show loader while saving changes
+    print(_profileImageUrl);
     final body = {
       "firstName": _firstNameController.text,
       "lastName": _lastNameController.text,
@@ -114,6 +91,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       },
       "profilePicture": _profileImageUrl ?? '',
     };
+
+    print(jsonEncode(body));
 
     final result = await ref.read(updateProfileProvider(body: jsonEncode(body)).future);
     setState(() => _isLoading = false); // Hide loader after save completes
@@ -156,13 +135,61 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final userAsync = ref.watch(userNotifierProvider);
+    print('DHFHS $_profileImageUrl');
+
+    Widget _buildProfileSummary(UserModel user) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFF1F1F3), width: 1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: _pickMedia,
+              child: CircleAvatar(
+                radius: 40,
+                backgroundImage: _profileImageUrl != null
+                    ? NetworkImage(_profileImageUrl!)
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '${user.firstName} ${user.lastName}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              user.email ?? '',
+              style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                const SizedBox(width: 4),
+                Text(
+                  user.stringAddress ?? 'No address provided',
+                  style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
 
     return Stack(
       children: [
         userAsync.when(
           data: (user) {
-            if (user != null) {
+            print('DHFHS2 $_profileImageUrl');
+            if (user != null && initDone== false) {
               setState(() {
+                initDone= true;
                 _firstNameController.text = user.firstName ?? '';
                 _lastNameController.text = user.lastName ?? '';
                 _usernameController.text = user.username ?? '';
@@ -174,6 +201,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     : null;
               });
             }
+            print('DHFHS3 $_profileImageUrl');
 
             return BaseFlowScreen(
               title: 'Edit Profile',
@@ -228,74 +256,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           ),
       ],
     );
+
   }
 
-  Widget _buildProfileSummary(UserModel user) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFF1F1F3), width: 1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: _pickMedia,
-            child: CircleAvatar(
-              radius: 40,
-              backgroundImage: _profileImageUrl != null
-                  ? NetworkImage(_profileImageUrl!)
-                  : null,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            '${user.firstName} ${user.lastName}',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            user.email ?? '',
-            style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
-              const SizedBox(width: 4),
-              Text(
-                user.stringAddress ?? 'No address provided',
-                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildOptionsRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.photo_camera, color: AppColors.primary),
-          onPressed: _pickMedia,
-        ),
-        IconButton(
-          icon: const Icon(Icons.location_on, color: AppColors.primary),
-          onPressed: _showLocationPicker,
-        ),
-        if (_profileImageUrl != null)
-          Row(
-            children: const [
-              Icon(Icons.check_circle, color: Colors.green),
-              SizedBox(width: 4),
-              Text("Files Added"),
-            ],
-          ),
-      ],
-    );
-  }
 }

@@ -20,7 +20,7 @@ final getUserProvider = AutoDisposeFutureProvider<UserModel?>.internal(
 );
 
 typedef GetUserRef = AutoDisposeFutureProviderRef<UserModel?>;
-String _$userNotifierHash() => r'136b242aca9e39928ebba21ded4f707489564d63';
+String _$userNotifierHash() => r'8ba3fb7137f1b35f74617f6358789145ea4a942f';
 
 /// See also [UserNotifier].
 @ProviderFor(UserNotifier)

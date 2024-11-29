@@ -51,7 +51,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           backgroundColor: Colors.green,
         );
         context.go('/bottom-nav');
-        //context.push('/home');
       } else {
         SnackbarUtils.showTopSnackbar(
           context: context,

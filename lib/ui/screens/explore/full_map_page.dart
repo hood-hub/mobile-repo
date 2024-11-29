@@ -49,6 +49,7 @@ class _FullMapPageState extends ConsumerState<FullMapPage> {
     try {
       // Get current user's location
       final currentUser = await ref.read(userNotifierProvider.future);
+      currentUser!.id;
       final coordinates = currentUser?.geoAddress?.coordinates;
       if (coordinates != null && coordinates.length >= 2) {
         _initialCenter = LatLng(coordinates[1], coordinates[0]);

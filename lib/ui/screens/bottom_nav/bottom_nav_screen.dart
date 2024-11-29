@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hoodhub/ui/screens/chat/chat_screen.dart';
 import '../../theme/app_colors.dart';
 import '../account/account_screen.dart';
 import '../create_post_screen/create_post_screen.dart';
@@ -17,11 +18,11 @@ class BottomNavScreen extends ConsumerStatefulWidget {
 class _BottomNavScreenState extends ConsumerState<BottomNavScreen> {
   // List of screens for each navigation item
   final List<Widget> _screens = [
-    HomeScreen(),
-    ExploreScreen(),
-    CreatePostScreen(),
-    MessagesScreen(),
-    AccountScreen(),
+    const HomeScreen(),
+    const ExploreScreen(),
+    const CreatePostScreen(),
+    const ChatScreen(),
+    const AccountScreen(),
   ];
 
   // Maintain state for each screen using a Map

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hoodhub/ui/screens/account/emergency_contact_screen.dart';
 import 'package:hoodhub/ui/screens/auth/reset_password_token_screen.dart';
+import 'package:hoodhub/ui/screens/chat/chat_item.dart';
+import 'package:hoodhub/ui/screens/chat/chat_screen.dart';
+import 'package:hoodhub/ui/screens/chat/messaging_screen.dart';
 import 'package:hoodhub/ui/screens/create_post_screen/create_post_screen.dart';
 import '../models/postmodel.dart';
 import '../ui/screens/account/account_screen.dart';
@@ -187,6 +190,29 @@ class AppRouter {
           path: '/full-map',
           name: 'full-map',
           builder: (context, state) => FullMapPage(),
+        ),
+        GoRoute(
+          path: '/chat',
+          name: 'chat',
+          builder: (context, state) => ChatScreen(),
+        ),
+        GoRoute(
+          path: '/messaging',
+          name: 'messaging',
+          builder: (context, state) {
+            // Extract chatId from queryParams
+            final chatId = state.queryParams['chatId'];
+            // Extract isGroup from extra, defaulting to false if not provided
+            final isGroup = (state.extra as Map<String, dynamic>?)?['isGroup'] as bool? ?? false;
+            final chatItemModel = (state.extra as Map<String, dynamic>?)?['chatItemModel'] as ChatItemModel;
+
+            // Validate chatId is present
+            if (chatId == null) {
+              throw Exception('chatId is required for messaging route');
+            }
+
+            return MessagingScreen(chatId: chatId, isGroup: isGroup, chatItemModel: chatItemModel);
+          },
         ),
         GoRoute(
           path: '/social-post',

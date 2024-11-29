@@ -59,6 +59,7 @@ dependencies:
   get_thumbnail_video: ^0.7.2
   video_thumbnail: ^0.5.3
   url_launcher: ^6.3.1
+  timezone: ^0.10.0
 
 dev_dependencies:
   flutter_test:
